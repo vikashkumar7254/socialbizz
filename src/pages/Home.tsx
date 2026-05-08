@@ -325,7 +325,7 @@ export default function Home() {
         />
       )}
       {/* Hero Section */}
-      <section ref={heroRef} className="relative isolate min-h-[760px] md:min-h-screen flex flex-col items-center justify-start md:justify-center overflow-hidden px-4 md:px-6 pt-[108px] pb-7 md:pt-28 md:pb-10 bg-white">
+      <section ref={heroRef} className="relative isolate md:min-h-screen flex flex-col items-center justify-start md:justify-center overflow-hidden px-4 md:px-6 pt-[108px] pb-12 md:pt-28 md:pb-10 bg-white">
         {/* Premium digital background */}
         <motion.div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={{ y: heroBackdropY, scale: heroScale }}>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)]" />
@@ -407,7 +407,7 @@ export default function Home() {
             />
           ))}
 
-          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/80 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-20 md:h-28 bg-gradient-to-t from-brand-section via-white/80 to-transparent" />
         </motion.div>
 
         <motion.div className="max-w-7xl mx-auto text-center relative z-10 w-full" style={{ y: heroContentY, opacity: heroOpacity }}>
@@ -531,6 +531,8 @@ export default function Home() {
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-text-secondary/50">Scroll</span>
           </motion.div>
         </motion.div>
+        <div className="absolute inset-x-0 bottom-0 z-10 h-px bg-gradient-to-r from-transparent via-brand-border to-transparent" />
+        <div className="absolute bottom-0 left-1/2 z-10 h-1 w-24 -translate-x-1/2 rounded-t-full bg-brand-primary/20 md:w-32" />
       </section>
 
       {/* Quick Inquiry Form */}
