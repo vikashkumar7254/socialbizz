@@ -29,10 +29,38 @@ export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus("submitting");
-    setTimeout(() => setFormStatus("success"), 1500);
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      message: formData.get("message"),
+      source: "FAQ Section Form",
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setFormStatus("success");
+      } else {
+        const result = await response.json().catch(() => ({}));
+        setFormStatus("idle");
+        alert(result.error || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting FAQ inquiry:", error);
+      setFormStatus("idle");
+      alert("Network error. Please check your connection.");
+    }
   };
 
   return (
@@ -158,6 +186,7 @@ export default function FAQ() {
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text-secondary" size={18} />
                       <input 
                         required
+                        name="name"
                         type="text" 
                         placeholder="John Doe"
                         className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-brand-primary transition-colors"
@@ -170,6 +199,7 @@ export default function FAQ() {
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text-secondary" size={18} />
                       <input 
                         required
+                        name="email"
                         type="email" 
                         placeholder="john@example.com"
                         className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-brand-primary transition-colors"
@@ -185,6 +215,7 @@ export default function FAQ() {
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-text-secondary" size={18} />
                       <input 
                         required
+                        name="phone"
                         type="tel" 
                         placeholder="+91 89015 09290"
                         className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-brand-primary transition-colors"
@@ -193,7 +224,7 @@ export default function FAQ() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-brand-text-primary uppercase tracking-widest ml-1">Service Type</label>
-                    <select className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 px-4 text-sm focus:outline-none focus:border-brand-primary transition-colors appearance-none">
+                    <select name="service" className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 px-4 text-sm focus:outline-none focus:border-brand-primary transition-colors appearance-none">
                       <option>SEO Optimization</option>
                       <option>Social Media Marketing</option>
                       <option>Performance Ads</option>
@@ -208,6 +239,7 @@ export default function FAQ() {
                     <MessageSquare className="absolute left-4 top-4 text-brand-text-secondary" size={18} />
                     <textarea 
                       required
+                      name="message"
                       rows={4}
                       placeholder="Tell us about your project..."
                       className="w-full bg-brand-section border border-brand-border rounded-2xl py-3.5 md:py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-brand-primary transition-colors resize-none"

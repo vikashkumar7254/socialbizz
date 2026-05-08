@@ -25,16 +25,44 @@ export default function CaseStudyCarousel() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus("submitting");
-    setTimeout(() => {
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      message: formData.get("message"),
+      service: selectedStudy ? `Case study inquiry: ${selectedStudy.title}` : "Case study inquiry",
+      source: "Case Study Carousel Form",
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        setFormStatus("idle");
+        alert(result.error || "Something went wrong. Please try again.");
+        return;
+      }
+
       setFormStatus("success");
       setTimeout(() => {
         setFormStatus("idle");
         setSelectedStudy(null);
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      console.error("Error submitting case study inquiry:", error);
+      setFormStatus("idle");
+      alert("Network error. Please check your connection.");
+    }
   };
 
   return (
@@ -239,6 +267,7 @@ export default function CaseStudyCarousel() {
                       <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Full Name</label>
                       <input 
                         required
+                        name="name"
                         type="text" 
                         placeholder="John Doe"
                         className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
@@ -248,6 +277,7 @@ export default function CaseStudyCarousel() {
                       <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Email Address</label>
                       <input 
                         required
+                        name="email"
                         type="email" 
                         placeholder="john@example.com"
                         className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
@@ -257,6 +287,7 @@ export default function CaseStudyCarousel() {
                       <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Phone Number</label>
                       <input 
                         required
+                        name="phone"
                         type="tel" 
                         placeholder="+91 89015 09290"
                         className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
@@ -265,6 +296,7 @@ export default function CaseStudyCarousel() {
                     <div className="space-y-1">
                       <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Message (Optional)</label>
                       <textarea 
+                        name="message"
                         rows={2}
                         placeholder="Tell us about your project..."
                         className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all resize-none text-brand-text-primary"
