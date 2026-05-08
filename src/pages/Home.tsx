@@ -325,7 +325,7 @@ export default function Home() {
         />
       )}
       {/* Hero Section */}
-      <section ref={heroRef} className="relative isolate min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 md:px-6 pt-24 pb-8 md:pt-28 md:pb-10 bg-white">
+      <section ref={heroRef} className="relative isolate min-h-[760px] md:min-h-screen flex flex-col items-center justify-start md:justify-center overflow-hidden px-4 md:px-6 pt-[108px] pb-7 md:pt-28 md:pb-10 bg-white">
         {/* Premium digital background */}
         <motion.div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={{ y: heroBackdropY, scale: heroScale }}>
           <div className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)]" />
@@ -410,7 +410,7 @@ export default function Home() {
           <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/80 to-transparent" />
         </motion.div>
 
-        <motion.div className="max-w-7xl mx-auto text-center relative z-10" style={{ y: heroContentY, opacity: heroOpacity }}>
+        <motion.div className="max-w-7xl mx-auto text-center relative z-10 w-full" style={{ y: heroContentY, opacity: heroOpacity }}>
           {/* HUD Corners - NEW */}
           <div className="absolute -inset-4 md:-inset-10 pointer-events-none opacity-20 hidden sm:block">
             <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-brand-primary" />

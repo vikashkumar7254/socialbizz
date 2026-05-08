@@ -42,7 +42,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-3"}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "py-2" : "py-2 md:py-3"}`}>
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6" ref={menuRef}>
         <div className={`flex items-center justify-between bg-white/90 backdrop-blur-xl px-3 sm:px-4 md:px-5 py-2 rounded-xl md:rounded-2xl transition-all duration-300 border ${scrolled ? "shadow-soft-lg border-brand-border" : "shadow-soft border-brand-border/60"}`}>
           <Link to="/" className="flex items-center gap-2">
@@ -54,7 +54,7 @@ export default function Navbar() {
               <img
                 src={brandLogo}
                 alt="SocialBizz"
-                className="block h-10 w-auto max-w-[180px] object-contain sm:h-11 md:h-12 md:max-w-[220px]"
+                className="block h-9 w-auto max-w-[150px] object-contain sm:h-10 md:h-12 md:max-w-[220px]"
               />
             </motion.div>
           </Link>
