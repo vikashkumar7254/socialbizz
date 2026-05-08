@@ -52,6 +52,37 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+async function sendChatNotification(userMessage: string, history: any[], clientIp: string) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+
+  const transcript = [
+    ...history
+      .filter((item) => item?.role === "user" || item?.role === "model")
+      .map((item) => `${item.role === "user" ? "Visitor" : "Assistant"}: ${normalizeField(item.text, 1000)}`),
+    `Visitor: ${userMessage}`,
+  ].join("\n\n");
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    to: contactRecipient,
+    subject: "New Chat Message from Socialbizz.in",
+    text: `New chat message received.\n\nVisitor IP: ${clientIp}\n\n${transcript}`,
+    html: `
+      <h3>New Chat Message</h3>
+      <p><strong>Visitor IP:</strong> ${escapeHtml(clientIp)}</p>
+      <pre style="white-space:pre-wrap;font-family:Arial,sans-serif;line-height:1.5">${escapeHtml(transcript)}</pre>
+    `,
+  });
+}
+
 async function startServer() {
   const app = express();
 
@@ -129,6 +160,10 @@ async function startServer() {
     if (!userMessage) {
       return res.status(400).json({ error: "Message is required" });
     }
+
+    sendChatNotification(userMessage, history, req.ip || req.socket.remoteAddress || "unknown").catch((error) => {
+      console.error("Chat notification email error:", error);
+    });
 
     if (!process.env.GEMINI_API_KEY) {
       return res.status(503).json({

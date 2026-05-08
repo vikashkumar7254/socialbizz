@@ -29,6 +29,7 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
     let dpr = 1;
     const ripples: WaterRipple[] = [];
     const pointer = { x: 0, y: 0, active: false };
+    const isDesktopPointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     const resize = () => {
       const rect = shell.getBoundingClientRect();
@@ -57,7 +58,8 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
       if (!force && now - lastRippleTime < 70) return;
       lastRippleTime = now;
 
-      ripples.push({ x: pointer.x, y: pointer.y, age: 0, strength: force ? 1.25 : 0.9 });
+      const baseStrength = isDesktopPointer ? 1.25 : 0.9;
+      ripples.push({ x: pointer.x, y: pointer.y, age: 0, strength: force ? 1.65 : baseStrength });
       if (ripples.length > 22) ripples.shift();
     };
 
@@ -68,20 +70,21 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
       context.clearRect(0, 0, width, height);
 
       if (pointer.active) {
-        const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 150);
-        glow.addColorStop(0, "rgba(211, 16, 39, 0.22)");
-        glow.addColorStop(0.28, "rgba(255, 255, 255, 0.56)");
-        glow.addColorStop(0.58, "rgba(211, 16, 39, 0.09)");
+        const glowRadius = isDesktopPointer ? 220 : 150;
+        const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, glowRadius);
+        glow.addColorStop(0, isDesktopPointer ? "rgba(211, 16, 39, 0.34)" : "rgba(211, 16, 39, 0.22)");
+        glow.addColorStop(0.28, "rgba(255, 255, 255, 0.6)");
+        glow.addColorStop(0.58, isDesktopPointer ? "rgba(211, 16, 39, 0.16)" : "rgba(211, 16, 39, 0.09)");
         glow.addColorStop(1, "rgba(211, 16, 39, 0)");
         context.fillStyle = glow;
         context.beginPath();
-        context.arc(pointer.x, pointer.y, 150, 0, Math.PI * 2);
+        context.arc(pointer.x, pointer.y, glowRadius, 0, Math.PI * 2);
         context.fill();
 
-        context.strokeStyle = "rgba(211, 16, 39, 0.28)";
-        context.lineWidth = 1.5;
+        context.strokeStyle = isDesktopPointer ? "rgba(211, 16, 39, 0.42)" : "rgba(211, 16, 39, 0.28)";
+        context.lineWidth = isDesktopPointer ? 2 : 1.5;
         context.beginPath();
-        context.arc(pointer.x, pointer.y, 42 + Math.sin(time / 120) * 5, 0, Math.PI * 2);
+        context.arc(pointer.x, pointer.y, (isDesktopPointer ? 58 : 42) + Math.sin(time / 120) * 5, 0, Math.PI * 2);
         context.stroke();
       }
 
@@ -97,8 +100,8 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
         const radius = 18 + progress * 260;
         const alpha = (1 - progress) * ripple.strength;
 
-        context.lineWidth = 2.4;
-        context.strokeStyle = `rgba(211, 16, 39, ${0.4 * alpha})`;
+        context.lineWidth = isDesktopPointer ? 3 : 2.4;
+        context.strokeStyle = `rgba(211, 16, 39, ${(isDesktopPointer ? 0.52 : 0.4) * alpha})`;
         context.beginPath();
         context.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
         context.stroke();
@@ -109,7 +112,7 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
         context.arc(ripple.x, ripple.y, radius * 0.72, 0, Math.PI * 2);
         context.stroke();
 
-        context.fillStyle = `rgba(211, 16, 39, ${0.06 * alpha})`;
+        context.fillStyle = `rgba(211, 16, 39, ${(isDesktopPointer ? 0.1 : 0.06) * alpha})`;
         context.beginPath();
         context.arc(ripple.x, ripple.y, radius * 0.52, 0, Math.PI * 2);
         context.fill();
@@ -120,6 +123,8 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
 
     const handlePointerMove = (event: PointerEvent) => addRipple(event.clientX, event.clientY);
     const handlePointerDown = (event: PointerEvent) => addRipple(event.clientX, event.clientY, true);
+    const handleMouseMove = (event: MouseEvent) => addRipple(event.clientX, event.clientY);
+    const handleMouseDown = (event: MouseEvent) => addRipple(event.clientX, event.clientY, true);
     const handleTouchMove = (event: TouchEvent) => {
       const touch = event.touches[0];
       if (touch) addRipple(touch.clientX, touch.clientY);
@@ -144,6 +149,8 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
 
@@ -153,6 +160,8 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchstart", handleTouchStart);
     };

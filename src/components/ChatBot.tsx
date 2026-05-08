@@ -11,7 +11,7 @@ const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
-    { role: "model", text: "Hi! I'm your Socialbizz assistant. How can I help you grow your business today?" }
+    { role: "model", text: "Hi! I'm your Socialbizz assistant. Share your question here. If you want our team to reply, please add your phone or email too." }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -89,7 +89,7 @@ const ChatBot: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-bold">Socialbizz Assistant</h3>
-                  <p className="text-[10px] opacity-80">Online | AI Powered</p>
+                  <p className="text-[10px] opacity-80">Online | Team Notified</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded">
@@ -130,7 +130,7 @@ const ChatBot: React.FC = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Type your message..."
+                  placeholder="Message, phone or email..."
                   className="flex-1 bg-brand-section border border-brand-border rounded-full px-4 py-2 text-xs focus:outline-none focus:border-brand-primary/50"
                 />
                 <button 

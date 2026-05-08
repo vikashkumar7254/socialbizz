@@ -95,7 +95,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <div className="text-brand-text-secondary text-[10px] md:text-sm font-bold uppercase tracking-widest mb-0.5 md:mb-1">Visit Us</div>
-                    <div className="text-lg md:text-xl font-bold text-brand-text-primary">Digital Hub, Mumbai, India</div>
+                    <div className="text-lg md:text-xl font-bold text-brand-text-primary">Office 17, 81, Block A, Sector 4, Noida, UP 201301</div>
                   </div>
                 </div>
                 
@@ -203,15 +203,6 @@ export default function Contact() {
                     />
                   </div>
 
-                  {/* reCAPTCHA Placeholder */}
-                  <div className="bg-brand-section/30 border border-brand-border rounded-xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 border-2 border-brand-border rounded bg-white" />
-                      <span className="text-xs md:text-sm text-brand-text-secondary">I'm not a robot</span>
-                    </div>
-                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA" className="h-8 opacity-40 grayscale" />
-                  </div>
-
                   <button 
                     disabled={formStatus === "submitting"}
                     className="w-full bg-brand-primary text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-bold text-base md:text-lg flex items-center justify-center gap-3 hover:bg-brand-primary-hover transition-all shadow-soft group disabled:opacity-70"
@@ -231,7 +222,7 @@ export default function Contact() {
         <div className="max-w-7xl mx-auto">
           <div className="bg-white h-[300px] md:h-[400px] rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-brand-border relative shadow-soft">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.11609823277!2d72.74109995709657!3d19.08219783958221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c6306644edc1%3A0x5da4ed8f8d64a77!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1712745000000!5m2!1sen!2sin" 
+              src="https://www.google.com/maps?q=Office%2017%2C%2081%2C%20Block%20A%2C%20Sector%204%2C%20Noida%2C%20UP%20201301&output=embed" 
               width="100%" 
               height="100%" 
               style={{ border: 0, filter: 'grayscale(1) contrast(1.2) opacity(0.8)' }} 

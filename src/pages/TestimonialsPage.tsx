@@ -219,14 +219,6 @@ export default function TestimonialsPage() {
                     <option value="web">Web Development</option>
                   </select>
 
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 border-2 border-slate-300 rounded" />
-                      <span className="text-sm text-slate-600">I'm not a robot</span>
-                    </div>
-                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA" className="h-8 opacity-50" />
-                  </div>
-
                   <button 
                     disabled={formStatus === "submitting"}
                     className="w-full bg-brand-primary text-white py-5 rounded-xl font-bold text-lg hover:bg-brand-primary-hover transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-70 group"

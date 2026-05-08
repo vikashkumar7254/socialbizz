@@ -1,7 +1,6 @@
 import { Mail, MapPin, Phone, Instagram, Twitter, Linkedin, Facebook, Send, Youtube, Globe, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const logoMark = "/Social%20Bizz%20Logo-06.png";
 const brandLogo = "/Social%20Bizz%20Logo-01.png";
 
 export default function Footer() {
@@ -47,14 +46,9 @@ export default function Footer() {
           <div className="space-y-6">
             <Link to="/" className="flex items-center gap-4">
               <img
-                src={logoMark}
-                alt="SocialBizz logo"
-                className="h-11 w-11 shrink-0 scale-125 object-contain"
-              />
-              <img
                 src={brandLogo}
                 alt="SocialBizz Technologies"
-                className="h-10 w-auto max-w-[170px] origin-left scale-150 object-contain"
+                className="h-12 w-auto max-w-[210px] origin-left scale-[1.7] object-contain"
               />
             </Link>
             
@@ -106,8 +100,8 @@ export default function Footer() {
               <li><Link to="/" className="hover:text-brand-primary transition-colors">Home</Link></li>
               <li><Link to="/about" className="hover:text-brand-primary transition-colors">About Us</Link></li>
               <li><Link to="/contact" className="hover:text-brand-primary transition-colors">Contact Us</Link></li>
-              <li><Link to="/blogs" className="hover:text-brand-primary transition-colors">Blogs</Link></li>
-              <li><Link to="/careers" className="hover:text-brand-primary transition-colors">Career Positions</Link></li>
+              <li><Link to="/portfolio" className="hover:text-brand-primary transition-colors">Portfolio</Link></li>
+              <li><Link to="/testimonials" className="hover:text-brand-primary transition-colors">Testimonials</Link></li>
             </ul>
           </div>
 
@@ -139,7 +133,7 @@ export default function Footer() {
               <li><Link to="/services/re-engagement" className="hover:text-brand-primary transition-colors">User Re-engagement</Link></li>
               <li><Link to="/services/google-ads" className="hover:text-brand-primary transition-colors">Google Ads (PPC)</Link></li>
               <li><Link to="/services/youtube-ads" className="hover:text-brand-primary transition-colors">YouTube Ads</Link></li>
-              <li><Link to="/services/facebook-ads" className="hover:text-brand-primary transition-colors">Facebook and Instagram Ads</Link></li>
+              <li><Link to="/services/fb-ig-ads" className="hover:text-brand-primary transition-colors">Facebook and Instagram Ads</Link></li>
             </ul>
           </div>
         </div>
@@ -154,10 +148,9 @@ export default function Footer() {
               <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-brand-primary"></div>
             </div>
             <ul className="space-y-2.5 text-brand-text-secondary text-xs pt-2">
-              <li><Link to="/services/orm" className="hover:text-brand-primary transition-colors">Online Reputation Management</Link></li>
               <li><Link to="/services/influencer-marketing" className="hover:text-brand-primary transition-colors">Influencer Marketing</Link></li>
               <li><Link to="/services/reviews-management" className="hover:text-brand-primary transition-colors">Reviews Management</Link></li>
-              <li><Link to="/services/pr-marketing" className="hover:text-brand-primary transition-colors">PR Marketing</Link></li>
+              <li><Link to="/services" className="hover:text-brand-primary transition-colors">All Services</Link></li>
             </ul>
           </div>
 
@@ -197,10 +190,10 @@ export default function Footer() {
               <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-brand-primary"></div>
             </div>
             <ul className="space-y-2.5 text-brand-text-secondary text-xs pt-2">
-              <li><Link to="/industries" className="hover:text-brand-primary transition-colors">Industries</Link></li>
-              <li><Link to="/industries/healthcare" className="hover:text-brand-primary transition-colors">Healthcare</Link></li>
-              <li><Link to="/industries/education" className="hover:text-brand-primary transition-colors">Education</Link></li>
-              <li><Link to="/industries/ecommerce" className="hover:text-brand-primary transition-colors">E-commerce</Link></li>
+              <li><Link to="/services" className="hover:text-brand-primary transition-colors">Industries</Link></li>
+              <li><Link to="/services/healthcare" className="hover:text-brand-primary transition-colors">Healthcare</Link></li>
+              <li><Link to="/services/education" className="hover:text-brand-primary transition-colors">Education</Link></li>
+              <li><Link to="/services/ecommerce" className="hover:text-brand-primary transition-colors">E-commerce</Link></li>
             </ul>
           </div>
         </div>
