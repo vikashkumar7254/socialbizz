@@ -1,7 +1,10 @@
 import { motion } from "motion/react";
-import { ArrowUpRight, BarChart3, Target, TrendingUp } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowRight, ArrowUpRight, BarChart3, CheckCircle2, Send, Target, TrendingUp } from "lucide-react";
 
 export default function About() {
+  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
+
   const particles = [
     { className: "left-[10%] top-[24%] h-2 w-2", delay: 0, duration: 5.5 },
     { className: "right-[14%] top-[30%] h-2.5 w-2.5", delay: 0.8, duration: 6.2 },
@@ -30,6 +33,46 @@ export default function About() {
       desc: "From visibility to conversions, we connect every digital touchpoint. We plan campaigns, create high-performing content, optimize funnels, and track what truly moves the business forward.",
     },
   ];
+
+  const proofPoints = [
+    "Growth strategy before execution",
+    "Clear reporting and practical next steps",
+    "Marketing, creative, and web support in one team",
+  ];
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFormStatus("submitting");
+
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      name: formData.get("name"),
+      email: formData.get("email"),
+      phone: formData.get("phone"),
+      service: formData.get("service"),
+      message: formData.get("message"),
+      source: "About Page Inquiry Form",
+    };
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setFormStatus("success");
+      } else {
+        setFormStatus("idle");
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting about page inquiry:", error);
+      setFormStatus("idle");
+      alert("Network error. Please check your connection.");
+    }
+  };
 
   return (
     <div className="bg-white pb-16">
@@ -89,11 +132,24 @@ export default function About() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mx-auto max-w-3xl text-base leading-relaxed text-brand-text-secondary md:text-xl"
+            className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-brand-text-secondary md:text-xl"
           >
             We help ambitious brands grow with focused strategy, strong creative, and performance-led execution.
           </motion.p>
 
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <a href="#about-inquiry" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-brand-primary-hover md:text-base">
+              Discuss Your Growth <ArrowRight size={16} />
+            </a>
+            <a href="https://wa.me/918901509290" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-brand-border bg-white px-6 py-3 text-sm font-bold text-brand-text-primary shadow-sm transition hover:bg-brand-section md:text-base">
+              WhatsApp Us
+            </a>
+          </motion.div>
         </div>
       </section>
 
@@ -146,6 +202,90 @@ export default function About() {
               </div>
             </motion.article>
           ))}
+        </div>
+      </section>
+
+      <section id="about-inquiry" className="px-4 py-14 md:px-6 md:py-20">
+        <div className="mx-auto grid max-w-6xl gap-6 overflow-hidden rounded-2xl border border-brand-border bg-brand-section p-6 shadow-soft-lg md:grid-cols-2 md:p-10">
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col justify-center"
+          >
+            <div className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">Work With Socialbizz</div>
+            <h2 className="mb-4 text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">
+              Like our approach? Tell us what you want to grow.
+            </h2>
+            <p className="mb-7 text-base leading-relaxed text-brand-text-secondary md:text-lg">
+              Share your business goal and our team will suggest the right mix of strategy, marketing, and digital execution.
+            </p>
+            <div className="space-y-3">
+              {proofPoints.map((item) => (
+                <div key={item} className="flex items-center gap-3 text-sm font-semibold text-brand-text-primary md:text-base">
+                  <CheckCircle2 className="shrink-0 text-brand-primary" size={18} />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl border border-brand-border bg-white p-5 shadow-soft md:p-6"
+          >
+            {formStatus === "success" ? (
+              <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="flex min-h-[430px] flex-col items-center justify-center text-center">
+                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
+                  <CheckCircle2 size={34} />
+                </div>
+                <h3 className="mb-2 text-2xl font-display font-bold text-brand-text-primary">Inquiry sent</h3>
+                <p className="max-w-sm text-brand-text-secondary">Thanks for reaching out. Our team will contact you shortly.</p>
+                <button onClick={() => setFormStatus("idle")} className="mt-6 font-bold text-brand-primary">
+                  Send another inquiry
+                </button>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary">Full Name</label>
+                  <input required name="name" className="w-full rounded-xl border border-brand-border bg-brand-section/40 px-4 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-accent" placeholder="Your name" />
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary">Email</label>
+                    <input required name="email" type="email" className="w-full rounded-xl border border-brand-border bg-brand-section/40 px-4 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-accent" placeholder="you@example.com" />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary">Phone</label>
+                    <input required name="phone" type="tel" className="w-full rounded-xl border border-brand-border bg-brand-section/40 px-4 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-accent" placeholder="+91 00000 00000" />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary">Interested In</label>
+                  <select required name="service" className="w-full rounded-xl border border-brand-border bg-brand-section/40 px-4 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-accent">
+                    <option value="">Select a service</option>
+                    <option>SEO and organic growth</option>
+                    <option>Google and Meta ads</option>
+                    <option>Social media marketing</option>
+                    <option>Website or app development</option>
+                    <option>Branding and creative support</option>
+                    <option>Complete digital growth plan</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary">Business Goal</label>
+                  <textarea required name="message" rows={4} className="w-full resize-none rounded-xl border border-brand-border bg-brand-section/40 px-4 py-3 text-sm outline-none transition focus:border-brand-primary focus:ring-4 focus:ring-brand-accent" placeholder="Tell us about your business and what you want to improve..." />
+                </div>
+                <button disabled={formStatus === "submitting"} className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-primary py-4 text-sm font-bold text-white transition hover:bg-brand-primary-hover disabled:opacity-70">
+                  {formStatus === "submitting" ? "Sending..." : "Send Inquiry"}
+                  <Send size={17} />
+                </button>
+              </form>
+            )}
+          </motion.div>
         </div>
       </section>
     </div>

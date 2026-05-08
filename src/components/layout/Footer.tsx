@@ -45,16 +45,16 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 md:gap-10">
           {/* Company Info */}
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-4">
               <img
                 src={logoMark}
                 alt="SocialBizz logo"
-                className="h-11 w-11 object-contain shrink-0"
+                className="h-11 w-11 shrink-0 scale-125 object-contain"
               />
               <img
                 src={brandLogo}
                 alt="SocialBizz Technologies"
-                className="h-10 w-auto max-w-[170px] object-contain"
+                className="h-10 w-auto max-w-[170px] origin-left scale-150 object-contain"
               />
             </Link>
             

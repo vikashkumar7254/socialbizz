@@ -54,7 +54,7 @@ export default function Navbar() {
               <img
                 src={brandLogo}
                 alt="SocialBizz"
-                className="block h-9 w-auto max-w-[150px] object-contain sm:h-10 md:h-12 md:max-w-[220px]"
+                className="block h-9 w-auto max-w-[150px] origin-left scale-[1.9] object-contain sm:h-10 sm:max-w-[170px] sm:scale-[1.8] md:h-12 md:max-w-[220px] md:scale-[1.65]"
               />
             </motion.div>
           </Link>
@@ -158,16 +158,16 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden absolute top-[72px] left-3 right-3 sm:left-4 sm:right-4 bg-white/95 backdrop-blur-xl p-4 rounded-2xl flex flex-col gap-1 z-50 shadow-soft-lg border border-brand-border overflow-hidden"
+            className="lg:hidden absolute top-[66px] left-3 right-3 z-50 max-h-[calc(100vh-88px)] overflow-y-auto rounded-2xl border border-brand-border bg-white/95 p-3 shadow-soft-lg backdrop-blur-xl sm:left-4 sm:right-4 sm:top-[70px] sm:p-4"
           >
             {navbarMenus.map((menu) => (
-              <div key={menu.title} className="space-y-1">
+              <div key={menu.title} className="space-y-1 border-b border-brand-border/70 pb-1 last:border-b-0">
                 <button 
                   onClick={() => setActiveMenu(activeMenu === menu.title ? null : menu.title)}
-                  className="w-full flex items-center justify-between text-base font-bold text-brand-text-primary p-2"
+                  className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold leading-snug text-brand-text-primary transition hover:bg-brand-section"
                 >
-                  {menu.title}
-                  <ChevronDown size={16} className={`transition-transform ${activeMenu === menu.title ? "rotate-180" : ""}`} />
+                  <span className="min-w-0 flex-1 break-words">{menu.title}</span>
+                  <ChevronDown size={16} className={`shrink-0 transition-transform ${activeMenu === menu.title ? "rotate-180" : ""}`} />
                 </button>
                 
                 <AnimatePresence>
@@ -176,15 +176,15 @@ export default function Navbar() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="pl-4 space-y-3 overflow-hidden"
+                      className="space-y-3 overflow-hidden px-2 pb-3 pt-1"
                     >
                       {menu.categories ? (
                         menu.categories.map(cat => (
-                          <div key={cat.name} className="space-y-1">
-                            <div className="text-[8px] uppercase tracking-widest text-brand-primary font-bold opacity-70">{cat.name}</div>
+                          <div key={cat.name} className="space-y-1.5">
+                            <div className="px-2 text-[10px] font-bold uppercase leading-snug tracking-widest text-brand-primary/80">{cat.name}</div>
                             <div className="grid grid-cols-1 gap-1">
                               {cat.items.map(item => (
-                                <Link key={item.slug} to={`/services/${item.slug}`} className="text-sm text-brand-text-secondary p-1.5 hover:text-brand-primary">{item.title}</Link>
+                                <Link key={item.slug} to={`/services/${item.slug}`} className="flex min-h-10 items-center rounded-lg px-2 py-2 text-sm font-medium leading-snug text-brand-text-secondary transition hover:bg-brand-section hover:text-brand-primary">{item.title}</Link>
                               ))}
                             </div>
                           </div>
@@ -192,7 +192,7 @@ export default function Navbar() {
                       ) : (
                         <div className="grid grid-cols-1 gap-1">
                           {menu.items?.map(item => (
-                            <Link key={item.slug} to={`/services/${item.slug}`} className="text-sm text-brand-text-secondary p-1.5 hover:text-brand-primary">{item.title}</Link>
+                            <Link key={item.slug} to={`/services/${item.slug}`} className="flex min-h-10 items-center rounded-lg px-2 py-2 text-sm font-medium leading-snug text-brand-text-secondary transition hover:bg-brand-section hover:text-brand-primary">{item.title}</Link>
                           ))}
                         </div>
                       )}
@@ -203,7 +203,7 @@ export default function Navbar() {
             ))}
 
             {navLinks.map((link) => (
-              <Link key={link.name} to={link.href} className="text-base font-bold text-brand-text-primary p-2">{link.name}</Link>
+              <Link key={link.name} to={link.href} className="flex min-h-11 items-center rounded-xl px-3 py-2.5 text-sm font-bold leading-snug text-brand-text-primary transition hover:bg-brand-section">{link.name}</Link>
             ))}
           </motion.div>
         )}

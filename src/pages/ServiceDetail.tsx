@@ -1,14 +1,25 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import React, { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Minus, Plus, Sparkles, Target, Zap } from "lucide-react";
+import { ArrowRight, BarChart3, CheckCircle2, Minus, Plus, Sparkles, Target, Zap } from "lucide-react";
 import { services } from "../data/services";
+import HeroBackground from "../components/HeroBackground";
+
+const categoryImages: Record<string, string> = {
+  "Branding & Lead Generation": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1000&h=760",
+  "Ads & Lead Generation": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000&h=760",
+  "Online Reputation": "https://images.unsplash.com/photo-1521791136064-7986c2959213?auto=format&fit=crop&q=80&w=1000&h=760",
+  "IT Services": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1000&h=760",
+  "Graphics Services": "https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&q=80&w=1000&h=760",
+  "Industries": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&q=80&w=1000&h=760",
+};
 
 export default function ServiceDetail() {
   const { slug } = useParams();
   const service = services.find((item) => item.slug === slug);
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const shouldReduceMotion = useReducedMotion();
 
   if (!service) {
     return <Navigate to="/services" replace />;
@@ -17,13 +28,34 @@ export default function ServiceDetail() {
   const relatedServices = services
     .filter((item) => item.category === service.category && item.slug !== service.slug)
     .slice(0, 3);
-
-  const heroParticles = [
-    { className: "left-[8%] top-[24%] h-2 w-2", delay: 0, duration: 5.4 },
-    { className: "right-[12%] top-[32%] h-2.5 w-2.5", delay: 0.7, duration: 6.1 },
-    { className: "left-[18%] bottom-[18%] h-1.5 w-1.5", delay: 1.2, duration: 5.8 },
-    { className: "right-[28%] bottom-[20%] h-2 w-2", delay: 1.8, duration: 6.4 },
-  ];
+  const serviceImage = service.image || categoryImages[service.category] || `https://picsum.photos/seed/${service.slug}/1000/760`;
+  const serviceStats = service.stats?.length
+    ? service.stats
+    : [
+        { label: "Strategy", value: "Custom" },
+        { label: "Support", value: "End-to-end" },
+      ];
+  const serviceSubServices = service.subServices?.length
+    ? service.subServices
+    : service.features.map((feature) => ({
+        title: feature,
+        desc: `Focused execution for ${feature.toLowerCase()} as part of your ${service.title} plan.`,
+      }));
+  const serviceProcess = service.process?.length
+    ? service.process
+    : [
+        { title: "Discovery", desc: `We understand your business goals, audience, current setup, and the role ${service.title} should play in growth.` },
+        { title: "Strategy", desc: "We turn the findings into a clear roadmap with priorities, timelines, and success metrics." },
+        { title: "Execution", desc: "Our team handles implementation with consistent quality, transparent updates, and practical decision-making." },
+        { title: "Optimization", desc: "We review performance, improve weak points, and keep the work aligned with measurable outcomes." },
+      ];
+  const serviceFaqs = service.faqs?.length
+    ? service.faqs
+    : [
+        { question: `Is ${service.title} right for my business?`, answer: `Yes, if your goal matches the outcomes listed on this page. We review your current stage first and recommend only the work that is useful for your business.` },
+        { question: "How soon can we start?", answer: "Most projects can begin after a short discovery call, goal confirmation, and access handover for the required platforms or brand assets." },
+        { question: "Will I get updates after work starts?", answer: "Yes. We keep communication clear with progress updates, next steps, and performance signals that matter for your project." },
+      ];
 
   const outcomeCards = [
     {
@@ -51,7 +83,9 @@ export default function ServiceDetail() {
     const data = {
       name: formData.get("name"),
       email: formData.get("email"),
+      phone: formData.get("phone"),
       service: `${service.title} - Goal: ${formData.get("goal")}`,
+      message: formData.get("message"),
       source: `Service Detail Page: ${service.title}`,
     };
 
@@ -77,36 +111,10 @@ export default function ServiceDetail() {
 
   return (
     <div className="bg-white pb-16">
-      <section className="relative overflow-hidden px-4 pb-14 pt-28 md:px-6 md:pb-24 md:pt-36">
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_56%,#ffffff_100%)]" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_28%_25%,rgba(211,16,39,0.1),transparent_32%),radial-gradient(circle_at_78%_40%,rgba(211,16,39,0.07),transparent_30%)]" />
-        <div className="absolute inset-0 -z-10 opacity-[0.14] [background-image:linear-gradient(to_right,rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
-        <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 34, repeat: Infinity, ease: "linear" }}
-          className="absolute left-[32%] top-[52%] -z-10 h-[32rem] w-[32rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand-primary/10"
-        />
-        <motion.div
-          animate={{ rotate: [360, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute right-[4%] top-[42%] -z-10 h-[22rem] w-[22rem] rounded-full border border-dashed border-brand-primary/10"
-        />
-        {heroParticles.map((particle, index) => (
-          <motion.span
-            key={index}
-            animate={{ y: [0, -18, 0], opacity: [0.18, 0.65, 0.18], scale: [1, 1.35, 1] }}
-            transition={{ duration: particle.duration, delay: particle.delay, repeat: Infinity, ease: "easeInOut" }}
-            className={`absolute -z-10 rounded-full bg-brand-primary/25 blur-[1px] ${particle.className}`}
-          />
-        ))}
+      <section className="relative isolate flex min-h-screen items-center overflow-hidden bg-white px-4 pb-14 pt-28 md:px-6 md:pb-20 md:pt-32">
+        <HeroBackground disabled={Boolean(shouldReduceMotion)} />
 
-        <div className="mx-auto max-w-7xl">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mb-7">
-            <Link to="/services" className="inline-flex items-center gap-2 rounded-full border border-brand-border bg-white px-4 py-2 text-sm font-bold text-brand-text-secondary shadow-sm transition hover:text-brand-primary">
-              <ArrowLeft size={16} /> Back to Services
-            </Link>
-          </motion.div>
-
+        <div className="relative z-10 mx-auto w-full max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
             <div className="lg:col-span-6">
               <motion.div
@@ -145,6 +153,19 @@ export default function ServiceDetail() {
                   View Details
                 </a>
               </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mt-7 grid max-w-lg grid-cols-2 gap-3"
+              >
+                {serviceStats.slice(0, 2).map((stat) => (
+                  <div key={stat.label} className="rounded-2xl border border-brand-border bg-white/80 p-4 shadow-sm">
+                    <div className="text-xl font-display font-black text-brand-primary md:text-2xl">{stat.value}</div>
+                    <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-text-secondary">{stat.label}</div>
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
             <motion.div
@@ -165,7 +186,7 @@ export default function ServiceDetail() {
                   className="absolute inset-y-0 z-10 w-28 -skew-x-12 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                 />
                 <img
-                  src={service.image || `https://picsum.photos/seed/${service.slug}/1000/760`}
+                  src={serviceImage}
                   alt={service.title}
                   className="aspect-[4/3] w-full object-cover"
                   referrerPolicy="no-referrer"
@@ -225,39 +246,37 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {service.subServices && service.subServices.length > 0 && (
-        <section className="bg-brand-section px-4 py-14 md:px-6 md:py-20">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-9 max-w-3xl">
-              <div className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">What We Cover</div>
-              <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">
-                Focused services inside {service.title}
-              </h2>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-              {service.subServices.map((item, index) => (
-                <motion.article
-                  key={item.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.06 }}
-                  whileHover={{ y: -6 }}
-                  className="group relative overflow-hidden rounded-2xl border border-brand-border bg-white p-6 shadow-soft transition hover:border-brand-accent hover:shadow-soft-lg"
-                >
-                  <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-brand-primary/[0.04] transition group-hover:bg-brand-primary/[0.08]" />
-                  <div className="relative z-10">
-                    <div className="mb-5 text-4xl font-display font-black text-brand-primary/[0.12]">0{index + 1}</div>
-                    <h3 className="mb-3 text-xl font-display font-bold text-brand-text-primary group-hover:text-brand-primary">{item.title}</h3>
-                    <p className="text-sm leading-relaxed text-brand-text-secondary">{item.desc}</p>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
+      <section className="bg-brand-section px-4 py-14 md:px-6 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-9 max-w-3xl">
+            <div className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">What We Cover</div>
+            <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">
+              Focused services inside {service.title}
+            </h2>
           </div>
-        </section>
-      )}
+
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {serviceSubServices.slice(0, 4).map((item, index) => (
+              <motion.article
+                key={item.title}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.06 }}
+                whileHover={{ y: -6 }}
+                className="group relative overflow-hidden rounded-2xl border border-brand-border bg-white p-6 shadow-soft transition hover:border-brand-accent hover:shadow-soft-lg"
+              >
+                <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-brand-primary/[0.04] transition group-hover:bg-brand-primary/[0.08]" />
+                <div className="relative z-10">
+                  <div className="mb-5 text-4xl font-display font-black text-brand-primary/[0.12]">0{index + 1}</div>
+                  <h3 className="mb-3 text-xl font-display font-bold text-brand-text-primary group-hover:text-brand-primary">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-brand-text-secondary">{item.desc}</p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className="px-4 py-14 md:px-6 md:py-20">
         <div className="mx-auto max-w-7xl">
@@ -292,74 +311,70 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {service.process && (
-        <section className="relative overflow-hidden bg-brand-section px-4 py-14 md:px-6 md:py-20">
-          <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
-          <motion.div
-            animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.7, 0.45] }}
-            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute left-1/2 top-0 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-white blur-[80px]"
-          />
-          <div className="relative mx-auto max-w-7xl">
-            <div className="mb-10 max-w-3xl md:mb-14">
-              <div className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-primary">Our Approach</div>
-              <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">
-                A clear framework for confident execution
-              </h2>
-            </div>
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-              {service.process.map((step, index) => (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.07 }}
-                  whileHover={{ y: -6 }}
-                  className="relative overflow-hidden rounded-2xl border border-brand-border bg-white p-6 shadow-soft transition hover:border-brand-accent hover:shadow-soft-lg"
-                >
-                  <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-brand-primary/[0.04]" />
-                  <div className="relative z-10">
-                    <div className="mb-6 text-5xl font-display font-black text-brand-primary/[0.12]">0{index + 1}</div>
-                    <h3 className="mb-3 text-xl font-display font-bold text-brand-text-primary">{step.title}</h3>
-                    <p className="text-sm leading-relaxed text-brand-text-secondary">{step.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+      <section className="relative overflow-hidden bg-brand-section px-4 py-14 md:px-6 md:py-20">
+        <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(15,23,42,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.7, 0.45] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-0 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-white blur-[80px]"
+        />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mb-10 max-w-3xl md:mb-14">
+            <div className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-primary">Our Approach</div>
+            <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">
+              A clear framework for confident execution
+            </h2>
           </div>
-        </section>
-      )}
-
-      {service.faqs && (
-        <section className="px-4 py-14 md:px-6 md:py-20">
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-9 text-center">
-              <div className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">FAQ</div>
-              <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">Questions clients ask</h2>
-            </div>
-            <div className="space-y-4">
-              {service.faqs.map((faq, index) => (
-                <div key={faq.question} className={`overflow-hidden rounded-2xl border transition ${activeFaq === index ? "border-brand-accent bg-brand-section shadow-soft" : "border-brand-border bg-white"}`}>
-                  <button onClick={() => setActiveFaq(activeFaq === index ? null : index)} className="flex w-full items-center justify-between gap-4 p-5 text-left font-bold text-brand-text-primary">
-                    {faq.question}
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-brand-primary shadow-sm">
-                      {activeFaq === index ? <Minus size={17} /> : <Plus size={17} />}
-                    </span>
-                  </button>
-                  <AnimatePresence>
-                    {activeFaq === index && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                        <div className="border-t border-brand-border px-5 py-4 text-sm leading-relaxed text-brand-text-secondary">{faq.answer}</div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {serviceProcess.map((step, index) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.07 }}
+                whileHover={{ y: -6 }}
+                className="relative overflow-hidden rounded-2xl border border-brand-border bg-white p-6 shadow-soft transition hover:border-brand-accent hover:shadow-soft-lg"
+              >
+                <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-full bg-brand-primary/[0.04]" />
+                <div className="relative z-10">
+                  <div className="mb-6 text-5xl font-display font-black text-brand-primary/[0.12]">0{index + 1}</div>
+                  <h3 className="mb-3 text-xl font-display font-bold text-brand-text-primary">{step.title}</h3>
+                  <p className="text-sm leading-relaxed text-brand-text-secondary">{step.desc}</p>
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
+
+      <section className="px-4 py-14 md:px-6 md:py-20">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-9 text-center">
+            <div className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-brand-primary">FAQ</div>
+            <h2 className="text-3xl font-display font-bold leading-tight text-brand-text-primary md:text-5xl">Questions clients ask</h2>
+          </div>
+          <div className="space-y-4">
+            {serviceFaqs.map((faq, index) => (
+              <div key={faq.question} className={`overflow-hidden rounded-2xl border transition ${activeFaq === index ? "border-brand-accent bg-brand-section shadow-soft" : "border-brand-border bg-white"}`}>
+                <button onClick={() => setActiveFaq(activeFaq === index ? null : index)} className="flex w-full items-center justify-between gap-4 p-5 text-left font-bold text-brand-text-primary">
+                  {faq.question}
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-brand-primary shadow-sm">
+                    {activeFaq === index ? <Minus size={17} /> : <Plus size={17} />}
+                  </span>
+                </button>
+                <AnimatePresence>
+                  {activeFaq === index && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
+                      <div className="border-t border-brand-border px-5 py-4 text-sm leading-relaxed text-brand-text-secondary">{faq.answer}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section id="contact" className="px-4 py-14 md:px-6 md:py-20">
         <div className="mx-auto grid max-w-6xl gap-6 overflow-hidden rounded-2xl border border-brand-border bg-white p-6 shadow-soft-lg md:grid-cols-2 md:p-10">
@@ -398,6 +413,10 @@ export default function ServiceDetail() {
                 <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-primary">Email Address</label>
                 <input required name="email" type="email" className="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-primary" placeholder="you@example.com" />
               </div>
+              <div className="mb-4">
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-primary">Phone Number</label>
+                <input required name="phone" type="tel" className="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-primary" placeholder="+91 00000 00000" />
+              </div>
               <div className="mb-5">
                 <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-primary">Primary Goal</label>
                 <select name="goal" className="w-full rounded-xl border border-brand-border bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-primary">
@@ -406,6 +425,10 @@ export default function ServiceDetail() {
                   <option>Build brand trust</option>
                   <option>Scale sales</option>
                 </select>
+              </div>
+              <div className="mb-5">
+                <label className="mb-1 block text-[10px] font-bold uppercase tracking-widest text-brand-text-primary">Project Details</label>
+                <textarea name="message" rows={3} className="w-full resize-none rounded-xl border border-brand-border bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-primary" placeholder="Tell us what you want to improve..." />
               </div>
               <button disabled={formStatus === "submitting"} className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-primary py-4 text-sm font-bold text-white transition hover:bg-brand-primary-hover disabled:opacity-70">
                 {formStatus === "submitting" ? "Sending..." : <>Book Strategy Call <ArrowRight size={17} /></>}
