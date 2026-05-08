@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, ChevronRight, ArrowRight, X, Send, CheckCircle2 } from "lucide-react";
+import { ArrowRight, X, Send, CheckCircle2 } from "lucide-react";
 import { caseStudies, CaseStudy } from "../data/caseStudies";
 
 export default function CaseStudyCarousel() {
@@ -164,19 +164,6 @@ export default function CaseStudyCarousel() {
             </AnimatePresence>
           </div>
 
-          {/* Controls */}
-          <button 
-            onClick={prevSlide}
-            className="absolute left-2 md:left-10 z-30 p-3 md:p-4 bg-white/80 hover:bg-brand-section border border-brand-border rounded-full text-brand-text-primary transition-all backdrop-blur-md group shadow-soft"
-          >
-            <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          </button>
-          <button 
-            onClick={nextSlide}
-            className="absolute right-2 md:right-10 z-30 p-3 md:p-4 bg-white/80 hover:bg-brand-section border border-brand-border rounded-full text-brand-text-primary transition-all backdrop-blur-md group shadow-soft"
-          >
-            <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
-          </button>
         </div>
 
         {/* Indicators */}
