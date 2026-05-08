@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, X, Send, CheckCircle2 } from "lucide-react";
 import { caseStudies, CaseStudy } from "../data/caseStudies";
@@ -64,6 +65,141 @@ export default function CaseStudyCarousel() {
       alert("Network error. Please check your connection.");
     }
   };
+
+  const modal = (
+    <AnimatePresence>
+      {selectedStudy && (
+        <div className="fixed inset-0 z-[100] min-h-dvh overflow-y-auto px-3 py-4 md:p-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedStudy(null)}
+            className="fixed inset-0 bg-brand-bg/80 backdrop-blur-sm"
+          />
+          
+          <div className="relative z-10 flex min-h-[calc(100dvh-2rem)] items-start justify-center md:min-h-[calc(100dvh-3rem)] md:items-center">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 20 }}
+              className="relative w-full max-w-4xl overflow-hidden bg-white border border-brand-border rounded-2xl md:max-h-[90dvh] md:overflow-y-auto md:rounded-[3rem] shadow-2xl grid lg:grid-cols-2"
+            >
+              {/* Left Side: Info */}
+              <div className="p-5 md:p-12 bg-brand-section border-b lg:border-b-0 lg:border-r border-brand-border">
+                <div className="mb-4 md:mb-6 pr-10 md:pr-0">
+                  <span className="text-brand-primary font-bold uppercase tracking-widest text-[10px] md:text-xs">{selectedStudy.category}</span>
+                  <h3 className="text-2xl md:text-3xl font-display font-bold mt-1 md:mt-2 text-brand-text-primary">{selectedStudy.title}</h3>
+                </div>
+                
+                <div className="space-y-4 md:space-y-6">
+                  <div>
+                    <h4 className="text-brand-primary font-bold text-xs md:text-sm mb-1 md:mb-2 uppercase tracking-widest">The Challenge</h4>
+                    <p className="text-xs md:text-sm text-brand-text-secondary leading-relaxed">{selectedStudy.problem}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-brand-primary font-bold text-xs md:text-sm mb-1 md:mb-2 uppercase tracking-widest">Key Results</h4>
+                    <div className="grid grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4">
+                      {selectedStudy.results.map((res, i) => (
+                        <div key={i} className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-brand-border shadow-soft">
+                          <div className="text-lg md:text-xl font-black text-brand-primary">{res.value}</div>
+                          <div className="text-[8px] md:text-[10px] text-brand-text-secondary uppercase font-bold">{res.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: Form */}
+              <div className="p-5 pb-6 md:p-12 relative">
+                <button 
+                  onClick={() => setSelectedStudy(null)}
+                  className="absolute top-3 right-3 md:top-6 md:right-6 p-2 text-brand-text-secondary hover:text-brand-primary transition-colors"
+                  aria-label="Close case study form"
+                >
+                  <X className="size-5 md:size-6" />
+                </button>
+
+                <div className="mb-5 md:mb-8 pr-10 md:pr-0">
+                  <h4 className="text-lg md:text-xl font-bold text-brand-text-primary">Get Similar Results</h4>
+                  <p className="text-xs md:text-sm text-brand-text-secondary mt-1">Fill out the form to start your success story.</p>
+                </div>
+
+                {formStatus === "success" ? (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center py-8 md:py-12"
+                  >
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle2 className="size-6 md:size-8" />
+                    </div>
+                    <h5 className="text-lg md:text-xl font-bold text-brand-text-primary">Request Sent!</h5>
+                    <p className="text-xs md:text-sm text-brand-text-secondary">We'll contact you shortly.</p>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Full Name</label>
+                      <input 
+                        required
+                        name="name"
+                        type="text" 
+                        placeholder="John Doe"
+                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Email Address</label>
+                      <input 
+                        required
+                        name="email"
+                        type="email" 
+                        placeholder="john@example.com"
+                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Phone Number</label>
+                      <input 
+                        required
+                        name="phone"
+                        type="tel" 
+                        placeholder="+91 89015 09290"
+                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Message (Optional)</label>
+                      <textarea 
+                        name="message"
+                        rows={2}
+                        placeholder="Tell us about your project..."
+                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all resize-none text-brand-text-primary"
+                      />
+                    </div>
+                    <button 
+                      disabled={formStatus === "submitting"}
+                      className="w-full min-h-12 bg-brand-primary text-white py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-xs md:text-sm hover:bg-brand-primary-hover transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 mt-2 md:mt-4"
+                    >
+                      {formStatus === "submitting" ? (
+                        <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          Send Request <Send className="size-3.5 md:size-4" />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <section className="premium-section py-8 md:py-12 px-4 md:px-6 bg-white text-brand-text-primary overflow-hidden relative">
@@ -178,136 +314,7 @@ export default function CaseStudyCarousel() {
         </div>
       </div>
 
-      {/* Modal Form */}
-      <AnimatePresence>
-        {selectedStudy && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedStudy(null)}
-              className="absolute inset-0 bg-brand-bg/80 backdrop-blur-sm"
-            />
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white border border-brand-border rounded-[2rem] md:rounded-[3rem] shadow-2xl grid lg:grid-cols-2"
-            >
-              {/* Left Side: Info */}
-              <div className="p-6 md:p-12 bg-brand-section border-b lg:border-b-0 lg:border-r border-brand-border">
-                <div className="mb-4 md:mb-6">
-                  <span className="text-brand-primary font-bold uppercase tracking-widest text-[10px] md:text-xs">{selectedStudy.category}</span>
-                  <h3 className="text-2xl md:text-3xl font-display font-bold mt-1 md:mt-2 text-brand-text-primary">{selectedStudy.title}</h3>
-                </div>
-                
-                <div className="space-y-4 md:space-y-6">
-                  <div>
-                    <h4 className="text-brand-primary font-bold text-xs md:text-sm mb-1 md:mb-2 uppercase tracking-widest">The Challenge</h4>
-                    <p className="text-xs md:text-sm text-brand-text-secondary leading-relaxed">{selectedStudy.problem}</p>
-                  </div>
-                  <div>
-                    <h4 className="text-brand-primary font-bold text-xs md:text-sm mb-1 md:mb-2 uppercase tracking-widest">Key Results</h4>
-                    <div className="grid grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4">
-                      {selectedStudy.results.map((res, i) => (
-                        <div key={i} className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-brand-border shadow-soft">
-                          <div className="text-lg md:text-xl font-black text-brand-primary">{res.value}</div>
-                          <div className="text-[8px] md:text-[10px] text-brand-text-secondary uppercase font-bold">{res.label}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Side: Form */}
-              <div className="p-6 md:p-12 relative">
-                <button 
-                  onClick={() => setSelectedStudy(null)}
-                  className="absolute top-4 right-4 md:top-6 md:right-6 p-2 text-brand-text-secondary hover:text-brand-primary transition-colors"
-                >
-                  <X className="size-5 md:size-6" />
-                </button>
-
-                <div className="mb-6 md:mb-8">
-                  <h4 className="text-lg md:text-xl font-bold text-brand-text-primary">Get Similar Results</h4>
-                  <p className="text-xs md:text-sm text-brand-text-secondary mt-1">Fill out the form to start your success story.</p>
-                </div>
-
-                {formStatus === "success" ? (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-8 md:py-12"
-                  >
-                    <div className="w-12 h-12 md:w-16 md:h-16 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 className="size-6 md:size-8" />
-                    </div>
-                    <h5 className="text-lg md:text-xl font-bold text-brand-text-primary">Request Sent!</h5>
-                    <p className="text-xs md:text-sm text-brand-text-secondary">We'll contact you shortly.</p>
-                  </motion.div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Full Name</label>
-                      <input 
-                        required
-                        name="name"
-                        type="text" 
-                        placeholder="John Doe"
-                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Email Address</label>
-                      <input 
-                        required
-                        name="email"
-                        type="email" 
-                        placeholder="john@example.com"
-                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Phone Number</label>
-                      <input 
-                        required
-                        name="phone"
-                        type="tel" 
-                        placeholder="+91 89015 09290"
-                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all text-brand-text-primary"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] md:text-xs font-bold text-brand-text-primary ml-1">Message (Optional)</label>
-                      <textarea 
-                        name="message"
-                        rows={2}
-                        placeholder="Tell us about your project..."
-                        className="w-full bg-white border border-brand-border rounded-lg md:rounded-xl px-4 md:px-5 py-2.5 md:py-3 text-xs md:text-sm focus:outline-none focus:border-brand-primary transition-all resize-none text-brand-text-primary"
-                      />
-                    </div>
-                    <button 
-                      disabled={formStatus === "submitting"}
-                      className="w-full bg-brand-primary text-white py-3 md:py-4 rounded-lg md:rounded-xl font-bold text-xs md:text-sm hover:bg-brand-primary-hover transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 mt-2 md:mt-4"
-                    >
-                      {formStatus === "submitting" ? (
-                        <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          Send Request <Send className="size-3.5 md:size-4" />
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {createPortal(modal, document.body)}
     </section>
   );
 }
