@@ -26,6 +26,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const ChatBot = lazy(() => import("./components/ChatBot"));
+const siteUrl = "https://www.socialbizz.in";
 
 function PageFallback() {
   return (
@@ -56,6 +57,34 @@ function AnimatedRoutes() {
       </Suspense>
     </AnimatePresence>
   );
+}
+
+function CanonicalUrl() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname === "/" ? "/" : location.pathname.replace(/\/+$/, "");
+    const canonicalUrl = `${siteUrl}${path}${location.pathname === "/" ? "" : ""}`;
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    let ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]');
+
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+
+    if (!ogUrl) {
+      ogUrl = document.createElement("meta");
+      ogUrl.setAttribute("property", "og:url");
+      document.head.appendChild(ogUrl);
+    }
+
+    canonical.href = canonicalUrl;
+    ogUrl.content = canonicalUrl;
+  }, [location.pathname]);
+
+  return null;
 }
 
 export default function App() {
@@ -92,6 +121,7 @@ export default function App() {
 
   return (
     <Router>
+      <CanonicalUrl />
       <ScrollToHash />
       <div className="min-h-screen flex flex-col">
         <Navbar />
