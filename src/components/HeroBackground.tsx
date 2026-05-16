@@ -1,14 +1,15 @@
 import { motion } from "motion/react";
 import React, { useEffect, useRef } from "react";
 
-type WaterRipple = {
-  x: number;
-  y: number;
-  age: number;
-  strength: number;
+type SignalPoint = {
+  lane: number;
+  progress: number;
+  speed: number;
+  size: number;
+  alpha: number;
 };
 
-function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
+function HeroSignalCanvas({ disabled }: { disabled: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -21,15 +22,21 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
     if (!canvas || !shell || !context) return;
 
     let animationFrame = 0;
-    let idleRippleInterval: ReturnType<typeof setInterval> | undefined;
     let lastTime = performance.now();
-    let lastRippleTime = 0;
     let width = 0;
     let height = 0;
     let dpr = 1;
-    const ripples: WaterRipple[] = [];
-    const pointer = { x: 0, y: 0, active: false };
-    const isDesktopPointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const pointer = { x: 0.5, y: 0.5, active: false };
+    const lanes = [0.18, 0.28, 0.39, 0.52, 0.64, 0.76];
+    const signals: SignalPoint[] = lanes.flatMap((_, lane) =>
+      Array.from({ length: 3 }, (_, index) => ({
+        lane,
+        progress: (index * 0.33 + lane * 0.08) % 1,
+        speed: 0.045 + lane * 0.006 + index * 0.004,
+        size: 2 + ((lane + index) % 3),
+        alpha: 0.42 + index * 0.08,
+      })),
+    );
 
     const resize = () => {
       const rect = shell.getBoundingClientRect();
@@ -43,24 +50,34 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    const addRipple = (clientX: number, clientY: number, force = false) => {
-      const rect = shell.getBoundingClientRect();
-      if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
-        pointer.active = false;
-        return;
+    const getPoint = (lane: number, progress: number, time: number) => {
+      const baseY = height * lanes[lane];
+      const wave = Math.sin(progress * Math.PI * 2 + lane * 0.9 + time * 0.0007) * height * 0.025;
+      const lift = Math.cos(progress * Math.PI * 4 + time * 0.00045) * height * 0.01;
+      return {
+        x: width * (-0.08 + progress * 1.16),
+        y: baseY + wave + lift,
+      };
+    };
+
+    const drawLane = (lane: number, time: number) => {
+      context.beginPath();
+      for (let step = 0; step <= 80; step += 1) {
+        const progress = step / 80;
+        const point = getPoint(lane, progress, time);
+        if (step === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
       }
 
-      pointer.x = clientX - rect.left;
-      pointer.y = clientY - rect.top;
-      pointer.active = true;
-
-      const now = performance.now();
-      if (!force && now - lastRippleTime < 70) return;
-      lastRippleTime = now;
-
-      const baseStrength = isDesktopPointer ? 1.25 : 0.9;
-      ripples.push({ x: pointer.x, y: pointer.y, age: 0, strength: force ? 1.65 : baseStrength });
-      if (ripples.length > 22) ripples.shift();
+      const gradient = context.createLinearGradient(0, 0, width, 0);
+      gradient.addColorStop(0, "rgba(15, 23, 42, 0)");
+      gradient.addColorStop(0.22, "rgba(15, 23, 42, 0.1)");
+      gradient.addColorStop(0.5, "rgba(211, 16, 39, 0.18)");
+      gradient.addColorStop(0.78, "rgba(15, 23, 42, 0.09)");
+      gradient.addColorStop(1, "rgba(15, 23, 42, 0)");
+      context.strokeStyle = gradient;
+      context.lineWidth = lane % 2 === 0 ? 1.4 : 1;
+      context.stroke();
     };
 
     const draw = (time: number) => {
@@ -69,144 +86,106 @@ function HeroWaterCanvas({ disabled }: { disabled: boolean }) {
 
       context.clearRect(0, 0, width, height);
 
-      if (pointer.active) {
-        const glowRadius = isDesktopPointer ? 220 : 150;
-        const glow = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, glowRadius);
-        glow.addColorStop(0, isDesktopPointer ? "rgba(211, 16, 39, 0.34)" : "rgba(211, 16, 39, 0.22)");
-        glow.addColorStop(0.28, "rgba(255, 255, 255, 0.6)");
-        glow.addColorStop(0.58, isDesktopPointer ? "rgba(211, 16, 39, 0.16)" : "rgba(211, 16, 39, 0.09)");
-        glow.addColorStop(1, "rgba(211, 16, 39, 0)");
-        context.fillStyle = glow;
-        context.beginPath();
-        context.arc(pointer.x, pointer.y, glowRadius, 0, Math.PI * 2);
-        context.fill();
+      const ambient = context.createLinearGradient(0, height * 0.2, width, height * 0.8);
+      ambient.addColorStop(0, "rgba(255, 255, 255, 0)");
+      ambient.addColorStop(0.48, "rgba(211, 16, 39, 0.055)");
+      ambient.addColorStop(1, "rgba(15, 23, 42, 0.035)");
+      context.fillStyle = ambient;
+      context.fillRect(0, 0, width, height);
 
-        context.strokeStyle = isDesktopPointer ? "rgba(211, 16, 39, 0.42)" : "rgba(211, 16, 39, 0.28)";
-        context.lineWidth = isDesktopPointer ? 2 : 1.5;
-        context.beginPath();
-        context.arc(pointer.x, pointer.y, (isDesktopPointer ? 58 : 42) + Math.sin(time / 120) * 5, 0, Math.PI * 2);
-        context.stroke();
+      for (let lane = 0; lane < lanes.length; lane += 1) {
+        drawLane(lane, time);
       }
 
-      for (let index = ripples.length - 1; index >= 0; index -= 1) {
-        const ripple = ripples[index];
-        ripple.age += delta;
-        const progress = ripple.age / 1.45;
-        if (progress >= 1) {
-          ripples.splice(index, 1);
-          continue;
-        }
+      for (const signal of signals) {
+        signal.progress = (signal.progress + signal.speed * delta) % 1;
+        const point = getPoint(signal.lane, signal.progress, time);
+        const pulse = 0.7 + Math.sin(time * 0.004 + signal.lane) * 0.3;
+        const size = signal.size + pulse;
 
-        const radius = 18 + progress * 260;
-        const alpha = (1 - progress) * ripple.strength;
+        context.fillStyle = `rgba(211, 16, 39, ${signal.alpha})`;
+        context.fillRect(point.x - size / 2, point.y - size / 2, size, size);
 
-        context.lineWidth = isDesktopPointer ? 3 : 2.4;
-        context.strokeStyle = `rgba(211, 16, 39, ${(isDesktopPointer ? 0.52 : 0.4) * alpha})`;
-        context.beginPath();
-        context.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
-        context.stroke();
-
+        context.strokeStyle = `rgba(255, 255, 255, ${0.5 * signal.alpha})`;
         context.lineWidth = 1;
-        context.strokeStyle = `rgba(255, 255, 255, ${0.55 * alpha})`;
-        context.beginPath();
-        context.arc(ripple.x, ripple.y, radius * 0.72, 0, Math.PI * 2);
-        context.stroke();
-
-        context.fillStyle = `rgba(211, 16, 39, ${(isDesktopPointer ? 0.1 : 0.06) * alpha})`;
-        context.beginPath();
-        context.arc(ripple.x, ripple.y, radius * 0.52, 0, Math.PI * 2);
-        context.fill();
+        context.strokeRect(point.x - size * 1.2, point.y - size * 1.2, size * 2.4, size * 2.4);
       }
+
+      const cursorX = pointer.x * width;
+      const cursorY = pointer.y * height;
+      const focus = context.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, pointer.active ? 260 : 180);
+      focus.addColorStop(0, pointer.active ? "rgba(211, 16, 39, 0.16)" : "rgba(255, 255, 255, 0.2)");
+      focus.addColorStop(0.42, "rgba(255, 255, 255, 0.18)");
+      focus.addColorStop(1, "rgba(255, 255, 255, 0)");
+      context.fillStyle = focus;
+      context.fillRect(0, 0, width, height);
 
       animationFrame = requestAnimationFrame(draw);
     };
 
-    const handlePointerMove = (event: PointerEvent) => addRipple(event.clientX, event.clientY);
-    const handlePointerDown = (event: PointerEvent) => addRipple(event.clientX, event.clientY, true);
-    const handleMouseMove = (event: MouseEvent) => addRipple(event.clientX, event.clientY);
-    const handleMouseDown = (event: MouseEvent) => addRipple(event.clientX, event.clientY, true);
-    const handleTouchMove = (event: TouchEvent) => {
-      const touch = event.touches[0];
-      if (touch) addRipple(touch.clientX, touch.clientY);
+    const handlePointerMove = (event: PointerEvent) => {
+      const rect = shell.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
+        pointer.active = false;
+        return;
+      }
+      pointer.x = (event.clientX - rect.left) / rect.width;
+      pointer.y = (event.clientY - rect.top) / rect.height;
+      pointer.active = true;
     };
-    const handleTouchStart = (event: TouchEvent) => {
-      const touch = event.touches[0];
-      if (touch) addRipple(touch.clientX, touch.clientY, true);
+
+    const handlePointerLeave = () => {
+      pointer.active = false;
     };
 
     resize();
-    ripples.push({ x: width * 0.5, y: height * 0.46, age: 0, strength: 0.75 });
-    idleRippleInterval = setInterval(() => {
-      ripples.push({
-        x: width * (0.38 + Math.random() * 0.24),
-        y: height * (0.34 + Math.random() * 0.26),
-        age: 0,
-        strength: 0.45,
-      });
-      if (ripples.length > 22) ripples.shift();
-    }, 1800);
     animationFrame = requestAnimationFrame(draw);
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("pointerleave", handlePointerLeave);
 
     return () => {
       cancelAnimationFrame(animationFrame);
-      if (idleRippleInterval) clearInterval(idleRippleInterval);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("pointerleave", handlePointerLeave);
     };
   }, [disabled]);
 
   return (
-    <div ref={shellRef} className="hero-water-canvas absolute inset-0 z-[2]" aria-hidden="true">
+    <div ref={shellRef} className="hero-signal-canvas absolute inset-0 z-[2]" aria-hidden="true">
       <canvas ref={canvasRef} className="h-full w-full" />
     </div>
   );
 }
 
-const heroRibbonBands = [
+const heroBeams = [
   {
-    style: { top: "14%", left: "-10%", rotate: "-10deg" },
-    size: "h-20 w-[18rem] md:h-28 md:w-[32rem]",
-    tone: "from-transparent via-brand-accent to-transparent",
-    duration: 10,
+    style: { top: "14%", left: "-18%", rotate: "-11deg" },
+    size: "h-16 w-[22rem] md:h-24 md:w-[42rem]",
+    duration: 11,
     delay: 0,
   },
   {
-    style: { top: "30%", right: "-8%", rotate: "14deg" },
-    size: "h-16 w-[16rem] md:h-24 md:w-[28rem]",
-    tone: "from-transparent via-brand-accent to-transparent",
-    duration: 12,
+    style: { top: "39%", right: "-16%", rotate: "13deg" },
+    size: "h-14 w-[20rem] md:h-20 md:w-[36rem]",
+    duration: 13,
     delay: 0.8,
   },
   {
-    style: { bottom: "20%", left: "8%", rotate: "8deg" },
-    size: "h-16 w-[14rem] md:h-24 md:w-[24rem]",
-    tone: "from-transparent via-brand-accent to-transparent",
-    duration: 11,
+    style: { bottom: "20%", left: "2%", rotate: "6deg" },
+    size: "h-12 w-[18rem] md:h-20 md:w-[32rem]",
+    duration: 12,
     delay: 0.4,
   },
 ];
 
-const heroAccentDots = [
-  { style: { top: "14%", left: "18%" }, delay: 0, duration: 4.8, size: "h-2.5 w-2.5" },
-  { style: { top: "24%", right: "20%" }, delay: 0.8, duration: 5.3, size: "h-2 w-2" },
-  { style: { top: "38%", left: "10%" }, delay: 1.1, duration: 5.1, size: "h-2 w-2" },
-  { style: { top: "42%", right: "12%" }, delay: 0.5, duration: 4.9, size: "h-2.5 w-2.5" },
-  { style: { bottom: "28%", left: "20%" }, delay: 1.4, duration: 5.5, size: "h-2 w-2" },
-  { style: { bottom: "18%", right: "18%" }, delay: 1.9, duration: 4.7, size: "h-2.5 w-2.5" },
-  { style: { bottom: "12%", left: "35%" }, delay: 0.3, duration: 5.2, size: "h-2 w-2" },
-  { style: { bottom: "11%", right: "34%" }, delay: 1.6, duration: 5, size: "h-2 w-2" },
+const metricTicks = [
+  { style: { top: "16%", left: "12%" }, delay: 0, height: "h-12" },
+  { style: { top: "22%", right: "16%" }, delay: 0.4, height: "h-16" },
+  { style: { top: "58%", left: "9%" }, delay: 0.8, height: "h-14" },
+  { style: { bottom: "18%", right: "12%" }, delay: 1.1, height: "h-12" },
+  { style: { bottom: "12%", left: "30%" }, delay: 1.5, height: "h-10" },
 ];
 
 type HeroBackgroundProps = {
@@ -217,60 +196,43 @@ type HeroBackgroundProps = {
 export default function HeroBackground({ disabled, style }: HeroBackgroundProps) {
   return (
     <motion.div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" style={style}>
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)]" />
-      <div className="premium-scan-grid absolute inset-0 z-[1] opacity-25" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_48%,#eef2f7_100%)]" />
+      <div className="premium-scan-grid absolute inset-0 z-[1] opacity-35" />
 
       <motion.div
-        animate={{ x: [0, 45, 0], y: [0, 20, 0], scale: [1, 1.08, 1] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -left-20 top-6 h-60 w-60 rounded-full bg-brand-accent blur-[110px] md:h-[22rem] md:w-[22rem]"
-      />
-      <motion.div
-        animate={{ x: [0, -35, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-        className="absolute -right-16 bottom-0 h-60 w-60 rounded-full bg-brand-accent blur-[120px] md:h-[22rem] md:w-[22rem]"
-      />
-
-      <motion.div
-        animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.03, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-1/2 top-[46%] h-[12rem] w-[12rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/70 blur-[14px] md:h-[18rem] md:w-[18rem]"
-      />
-
-      <HeroWaterCanvas disabled={disabled} />
-
-      <motion.div
-        animate={{ x: ["-8%", "8%", "-8%"], opacity: [0.1, 0.18, 0.1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-0 right-0 top-[25%] h-24 bg-gradient-to-r from-transparent via-brand-accent to-transparent blur-3xl"
-      />
-      <motion.div
-        animate={{ x: ["8%", "-8%", "8%"], opacity: [0.05, 0.12, 0.05] }}
+        animate={{ x: ["-6%", "6%", "-6%"], opacity: [0.16, 0.32, 0.16] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-0 right-0 bottom-[18%] h-20 bg-gradient-to-r from-transparent via-brand-accent to-transparent blur-3xl"
+        className="absolute left-0 right-0 top-[23%] h-24 bg-gradient-to-r from-transparent via-brand-primary/12 to-transparent blur-3xl"
+      />
+      <motion.div
+        animate={{ x: ["7%", "-7%", "7%"], opacity: [0.08, 0.2, 0.08] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+        className="absolute left-0 right-0 bottom-[18%] h-24 bg-gradient-to-r from-transparent via-slate-400/18 to-transparent blur-3xl"
       />
 
-      {heroRibbonBands.map((band, index) => (
+      <HeroSignalCanvas disabled={disabled} />
+
+      {heroBeams.map((beam, index) => (
         <motion.div
-          key={`hero-band-${index}`}
-          animate={{ x: [0, index % 2 === 0 ? 36 : -36, 0], opacity: [0.28, 0.65, 0.28], scaleX: [1, 1.08, 1] }}
-          transition={{ duration: band.duration, repeat: Infinity, ease: "easeInOut", delay: band.delay }}
-          style={band.style}
-          className={`absolute bg-gradient-to-r ${band.tone} blur-2xl ${band.size}`}
+          key={`hero-beam-${index}`}
+          animate={{ x: [0, index % 2 === 0 ? 42 : -42, 0], opacity: [0.16, 0.42, 0.16], scaleX: [1, 1.1, 1] }}
+          transition={{ duration: beam.duration, repeat: Infinity, ease: "easeInOut", delay: beam.delay }}
+          style={beam.style}
+          className={`absolute z-[1] bg-gradient-to-r from-transparent via-white/80 to-transparent blur-2xl ${beam.size}`}
         />
       ))}
 
-      {heroAccentDots.map((dot, index) => (
+      {metricTicks.map((tick, index) => (
         <motion.div
-          key={`hero-dot-${index}`}
-          animate={{ y: [0, -14, 0], opacity: [0.25, 0.7, 0.25], scale: [1, 1.35, 1] }}
-          transition={{ duration: dot.duration, repeat: Infinity, ease: "easeInOut", delay: dot.delay }}
-          style={dot.style}
-          className={`absolute rounded-full bg-brand-primary/25 blur-[1px] ${dot.size}`}
+          key={`metric-tick-${index}`}
+          animate={{ scaleY: [0.65, 1, 0.65], opacity: [0.18, 0.52, 0.18] }}
+          transition={{ duration: 3.8 + index * 0.35, repeat: Infinity, ease: "easeInOut", delay: tick.delay }}
+          style={tick.style}
+          className={`absolute z-[3] w-px ${tick.height} bg-gradient-to-b from-transparent via-brand-primary/45 to-transparent`}
         />
       ))}
 
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-brand-section via-white/80 to-transparent md:h-28" />
+      <div className="absolute inset-x-0 bottom-0 z-[4] h-20 bg-gradient-to-t from-brand-section via-white/80 to-transparent md:h-28" />
     </motion.div>
   );
 }

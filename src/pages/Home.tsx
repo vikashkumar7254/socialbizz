@@ -24,7 +24,6 @@ import HeroBackground from "../components/HeroBackground";
 const Results = lazy(() => import("../components/Results"));
 const Testimonials = lazy(() => import("../components/Testimonials"));
 const CaseStudyCarousel = lazy(() => import("../components/CaseStudyCarousel"));
-const VideoTestimonials = lazy(() => import("../components/VideoTestimonials"));
 const FAQ = lazy(() => import("../components/FAQ"));
 const PlatformScroller = lazy(() => import("../components/PlatformScroller"));
 
@@ -107,13 +106,13 @@ export default function Home() {
   };
 
   const stats = [
-    { label: "Clients", value: "100+", icon: <Users className="text-brand-primary" /> },
+    { label: "Clients", value: "20+", icon: <Users className="text-brand-primary" /> },
     { label: "Campaigns", value: "500+", icon: <Megaphone className="text-brand-primary" /> },
     { label: "ROI Delivered", value: "3X", icon: <TrendingUp className="text-brand-primary" /> },
   ];
 
   return (
-    <div className="pb-2">
+    <div className="overflow-x-hidden pb-2">
       {!shouldReduceMotion && (
         <motion.div
           className="pointer-events-none fixed left-0 top-0 z-[60] hidden h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary/10 blur-3xl lg:block"
@@ -122,10 +121,10 @@ export default function Home() {
         />
       )}
       {/* Hero Section */}
-      <section ref={heroRef} className="relative isolate md:min-h-screen flex flex-col items-center justify-start md:justify-center overflow-hidden px-4 md:px-6 pt-[108px] pb-12 md:pt-28 md:pb-10 bg-white">
+      <section ref={heroRef} className="relative isolate md:min-h-screen flex flex-col items-center justify-start md:justify-center overflow-hidden px-4 md:px-6 pt-[92px] pb-10 md:pt-28 md:pb-10 bg-white">
         <HeroBackground disabled={Boolean(shouldReduceMotion)} style={{ y: heroBackdropY, scale: heroScale }} />
 
-        <motion.div className="max-w-7xl mx-auto text-center relative z-10 w-full" style={{ y: heroContentY, opacity: heroOpacity }}>
+        <motion.div className="max-w-7xl mx-auto text-center relative z-10 w-full min-w-0" style={{ y: heroContentY, opacity: heroOpacity }}>
           {/* HUD Corners - NEW */}
           <div className="absolute -inset-4 md:-inset-10 pointer-events-none opacity-20 hidden sm:block">
             <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-brand-primary" />
@@ -137,7 +136,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-block px-4 py-2 md:px-4 md:py-1.5 mb-4 md:mb-5 bg-brand-accent rounded-full text-[11px] xs:text-xs md:text-sm font-bold text-brand-primary border border-brand-border whitespace-nowrap shadow-sm relative z-20"
+            className="inline-block max-w-full px-3 py-2 md:px-4 md:py-1.5 mb-4 md:mb-5 bg-brand-accent rounded-full text-[10px] xs:text-xs md:text-sm font-bold text-brand-primary border border-brand-border whitespace-normal sm:whitespace-nowrap shadow-sm relative z-20 leading-tight"
           >
             Turning Social Presence into Real Business
           </motion.div>
@@ -146,9 +145,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-display font-bold mb-4 md:mb-5 tracking-tight leading-[1.06] text-brand-text-primary [text-wrap:balance]"
+            className="mx-auto max-w-[21rem] text-[2.55rem] sm:max-w-3xl sm:text-5xl md:text-6xl xl:text-7xl font-display font-bold mb-4 md:mb-5 tracking-tight leading-[1.02] md:leading-[1.06] text-brand-text-primary [text-wrap:balance]"
           >
-            Scale Your Business with <br />
+            Scale Your Business <span className="hidden sm:inline">with</span> <br className="hidden sm:block" />
             <motion.span 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -169,17 +168,24 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-base md:text-lg text-brand-text-secondary max-w-2xl mx-auto mb-5 md:mb-7 leading-relaxed"
+            className="text-sm md:text-lg text-brand-text-secondary max-w-[21rem] md:max-w-2xl mx-auto mb-3 leading-relaxed"
           >
-            We help brands grow using SEO, Ads & Social Media Marketing. 
-            Data-driven strategies designed for maximum impact and ROI.
+            SEO, Ads & Lead Generation for Growing Brands.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.24 }}
+            className="text-xs md:text-base text-brand-text-secondary max-w-[21rem] md:max-w-2xl mx-auto mb-5 md:mb-7 leading-relaxed"
+          >
+            We build data-driven campaigns that attract the right audience, improve visibility, and turn attention into qualified leads.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="flex flex-row items-center justify-center gap-3 md:gap-5 mb-6 md:mb-8"
+            className="flex flex-row items-center justify-center gap-2.5 md:gap-5 mb-6 md:mb-8"
           >
             <motion.div
               whileHover={{ scale: 1.02 }}
@@ -189,7 +195,7 @@ export default function Home() {
               <div className="absolute -inset-1 bg-gradient-to-r from-brand-primary to-brand-primary-hover rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
               <Link 
                 to="/contact" 
-                className="relative bg-brand-primary px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-xs md:text-lg text-white flex items-center justify-center gap-2 md:gap-3 hover:bg-brand-primary-hover transition-all shadow-soft whitespace-nowrap overflow-hidden premium-magnetic"
+                className="relative bg-brand-primary px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-[11px] xs:text-xs md:text-lg text-white flex items-center justify-center gap-2 md:gap-3 hover:bg-brand-primary-hover transition-all shadow-soft whitespace-nowrap overflow-hidden premium-magnetic"
               >
                 <motion.div
                   animate={{
@@ -207,29 +213,38 @@ export default function Home() {
               </Link>
             </motion.div>
             
-            <Link to="/portfolio" className="w-auto border border-brand-border px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-xs md:text-lg text-brand-text-primary hover:bg-brand-section transition-all text-center whitespace-nowrap backdrop-blur-sm premium-magnetic">
+            <Link to="/portfolio" className="w-auto border border-brand-border px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-[11px] xs:text-xs md:text-lg text-brand-text-primary hover:bg-brand-section transition-all text-center whitespace-nowrap backdrop-blur-sm premium-magnetic">
               View Our Work
             </Link>
           </motion.div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-3 gap-2 md:gap-4 max-w-3xl mx-auto">
+          <div className="grid w-full max-w-[22rem] grid-cols-3 gap-2 md:gap-4 md:max-w-3xl mx-auto">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 + i * 0.1 }}
-                whileHover={{ y: -5 }}
-                className="bg-white px-3 py-2.5 md:px-5 md:py-3.5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-1.5 group shadow-soft border border-brand-border hover:border-brand-accent transition-all duration-500 relative overflow-hidden col-span-1 premium-card"
+                whileHover={{ y: -8, scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-white px-2 py-2.5 md:px-5 md:py-3.5 rounded-xl md:rounded-2xl flex flex-col items-center gap-1 md:gap-1.5 group shadow-soft border border-brand-border hover:border-brand-primary/30 transition-all duration-500 relative overflow-hidden col-span-1 premium-card cursor-pointer"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-accent via-white to-brand-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-brand-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <motion.div
+                  aria-hidden="true"
+                  className="absolute inset-y-0 -left-10 w-8 bg-white/60 blur-md"
+                  initial={{ x: "-100%" }}
+                  whileHover={{ x: "520%" }}
+                  transition={{ duration: 0.75, ease: "easeOut" }}
+                />
                 <div className="relative z-10 flex flex-col items-center gap-1 md:gap-1.5">
-                <div className="p-1.5 md:p-2 bg-brand-accent rounded-lg md:rounded-xl mb-0.5 group-hover:scale-105 group-hover:bg-brand-accent transition-all text-brand-primary">
+                <div className="p-1.5 md:p-2 bg-brand-accent rounded-lg md:rounded-xl mb-0.5 group-hover:scale-110 group-hover:bg-brand-primary group-hover:text-white transition-all text-brand-primary">
                     {stat.icon}
                   </div>
-                  <div className="text-lg md:text-2xl font-display font-bold text-brand-primary leading-none">{stat.value}</div>
-                  <div className="text-brand-text-secondary text-[8px] md:text-[11px] uppercase tracking-[0.18em] font-semibold text-center leading-tight">{stat.label}</div>
+                  <div className="text-lg md:text-2xl font-display font-bold text-brand-primary leading-none group-hover:tracking-wide transition-all">{stat.value}</div>
+                  <div className="text-brand-text-secondary group-hover:text-brand-text-primary text-[8px] md:text-[11px] uppercase tracking-[0.18em] font-semibold text-center leading-tight transition-colors">{stat.label}</div>
                 </div>
               </motion.div>
             ))}
@@ -257,24 +272,24 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-soft-lg border border-brand-border overflow-hidden relative premium-card"
+            className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-soft-lg border border-brand-border overflow-hidden relative premium-card"
           >
             <div className="grid md:grid-cols-12">
               {/* Left Side: Info */}
-              <div className="md:col-span-5 bg-brand-primary p-6 md:p-10 text-white relative overflow-hidden">
+              <div className="md:col-span-5 bg-brand-primary p-5 md:p-10 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full -mr-32 -mt-32" />
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/5 blur-[60px] rounded-full -ml-20 -mb-20" />
                 
                 <div className="relative z-10 h-full flex flex-col justify-center md:justify-between gap-6 md:gap-0">
                   <div>
-                    <h3 className="text-xl md:text-3xl font-display font-bold mb-2 md:mb-3 leading-tight">Let's Build Your Digital Success</h3>
-                    <p className="text-white/80 text-[10px] md:text-sm mb-4 md:mb-6 max-w-sm">
-                      Fill out the form and our strategy experts will reach out to you within 24 hours for a free consultation.
+                    <h3 className="max-w-[18rem] text-lg md:text-3xl font-display font-bold mb-2 md:mb-3 leading-tight">Let's Build Your Digital Growth</h3>
+                    <p className="max-w-[18rem] text-white/80 text-[11px] md:text-sm mb-4 md:mb-6 leading-relaxed">
+                      Share your details and our strategy team will contact you within 24 hours for a free consultation.
                     </p>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-4">
                       <div className="flex items-center gap-2 md:gap-3">
-                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex shrink-0 items-center justify-center border border-white/20">
                           <Clock size={12} className="text-white" />
                         </div>
                         <div>
@@ -283,7 +298,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 md:gap-3">
-                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/10 flex shrink-0 items-center justify-center border border-white/20">
                           <CheckCircle2 size={12} className="text-white" />
                         </div>
                         <div>
@@ -294,7 +309,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="mt-4 md:mt-8 pt-4 md:pt-6 border-t border-white/10">
+                  <div className="mt-4 hidden border-t border-white/10 pt-4 md:mt-8 md:block md:pt-6">
                     <div className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Trusted By Brands Like</div>
                     <div className="flex flex-wrap gap-4 opacity-70 grayscale invert">
                       <img
@@ -308,7 +323,7 @@ export default function Home() {
               </div>
 
               {/* Right Side: Form */}
-              <div className="md:col-span-7 p-6 md:p-10 bg-white">
+              <div className="md:col-span-7 p-5 md:p-10 bg-white">
                 {homeFormStatus === "success" ? (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -322,6 +337,22 @@ export default function Home() {
                     <p className="text-brand-text-secondary text-sm max-w-xs mx-auto">
                       Thank you for reaching out. One of our experts will contact you shortly on your provided number.
                     </p>
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                      <a
+                        href="https://wa.me/918901509290"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-xl bg-[#25D366] px-4 py-2.5 text-xs font-bold text-white transition hover:brightness-95"
+                      >
+                        Message on WhatsApp
+                      </a>
+                      <a
+                        href="tel:+918901509290"
+                        className="rounded-xl border border-brand-border px-4 py-2.5 text-xs font-bold text-brand-text-primary transition hover:border-brand-primary hover:text-brand-primary"
+                      >
+                        Call Now
+                      </a>
+                    </div>
                     <button 
                       onClick={() => setHomeFormStatus("idle")}
                       className="text-brand-primary font-bold text-xs hover:underline pt-3"
@@ -330,8 +361,8 @@ export default function Home() {
                     </button>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleHomeSubmit} className="space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
+                  <form onSubmit={handleHomeSubmit} className="space-y-3.5 md:space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-3.5 md:gap-4">
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-bold text-brand-text-secondary uppercase tracking-widest ml-1">Full Name</label>
                         <div className="relative">
@@ -340,8 +371,8 @@ export default function Home() {
                             required
                             name="name"
                             type="text" 
-                            placeholder="John Doe" 
-                            className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
+                            placeholder="Your full name" 
+                            className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
                           />
                         </div>
                       </div>
@@ -353,8 +384,8 @@ export default function Home() {
                             required
                             name="phone"
                             type="tel" 
-                            placeholder="+91 XXXXX XXXXX" 
-                            className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
+                            placeholder="+91 98765 43210" 
+                            className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
                           />
                         </div>
                       </div>
@@ -368,8 +399,8 @@ export default function Home() {
                           required
                           name="email"
                           type="email" 
-                          placeholder="john@example.com" 
-                          className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
+                          placeholder="you@example.com" 
+                          className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary"
                         />
                       </div>
                     </div>
@@ -381,15 +412,15 @@ export default function Home() {
                         <textarea 
                           rows={2}
                           name="message"
-                          placeholder="Tell us about your project or goals..." 
-                          className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary resize-none"
+                          placeholder="Tell us what you want to grow..." 
+                          className="w-full bg-white border border-brand-border rounded-xl pl-10 pr-4 py-3.5 text-sm focus:outline-none focus:border-brand-primary focus:ring-4 focus:ring-brand-accent transition-all text-brand-text-primary resize-none"
                         />
                       </div>
                     </div>
 
                     <button 
                       disabled={homeFormStatus === "submitting"}
-                      className="w-full bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary-hover transition-all shadow-soft flex items-center justify-center gap-2 disabled:opacity-70 group"
+                      className="w-full bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary-hover transition-all shadow-soft flex items-center justify-center gap-2 disabled:opacity-70 group text-sm md:text-base"
                     >
                       {homeFormStatus === "submitting" ? (
                         "Processing..."
@@ -491,7 +522,7 @@ export default function Home() {
                           {service.shortDesc}
                         </p>
                         <div className="text-[13px] md:text-sm font-bold flex items-center gap-2 text-brand-primary group-hover:gap-3 transition-all mt-auto">
-                          Learn More <ArrowRight size={16} />
+                          Explore Service <ArrowRight size={16} />
                         </div>
                       </div>
                     </div>
@@ -512,10 +543,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <Suspense fallback={<SectionFallback />}>
-        <VideoTestimonials />
-      </Suspense>
 
       {/* About Preview */}
       <section id="about" className="premium-section py-8 md:py-12 px-4 md:px-6 bg-brand-section relative overflow-hidden">
@@ -621,7 +648,7 @@ export default function Home() {
                 to="/about" 
                 className="inline-block bg-brand-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-primary-hover transition-all shadow-soft text-center text-sm"
               >
-                Learn More
+                About Socialbizz
               </Link>
               <Link 
                 to="/contact" 

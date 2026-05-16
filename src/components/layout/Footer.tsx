@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone, Instagram, Twitter, Linkedin, Facebook, Send, Youtube, Globe, MessageCircle } from "lucide-react";
+import { Mail, MapPin, Phone, Send, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const brandLogo = "/Social%20Bizz%20Logo-01.png";
@@ -43,7 +43,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 md:gap-10">
           {/* Company Info */}
-          <div className="space-y-6">
+          <div className="col-span-2 space-y-6 lg:col-span-1">
             <Link to="/" className="flex items-center gap-4">
               <img
                 src={brandLogo}
@@ -79,13 +79,6 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {[Facebook, Twitter, Instagram, Linkedin, Globe, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-brand-text-secondary hover:text-white hover:bg-brand-primary border border-brand-border hover:border-brand-primary transition-all duration-300 shadow-sm">
-                  <Icon size={12} />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Quick Links */}
